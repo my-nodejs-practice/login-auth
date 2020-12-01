@@ -1,7 +1,7 @@
 const users = [
-  { id: 1, username: 'zhangsan', password: '123123', age: 18, job: 'front-end engineer' },
-  { id: 2, username: 'lisi', password: '123123', age: 20, job: 'back-end engineer' },
-  { id: 3, username: 'wangwu', password: '123123', age: 28, job: 'ios engineer' },
+  { id: 1, username: 'zhangsan', password: 'abc123123', age: 18, job: 'front-end engineer' },
+  { id: 2, username: 'lisi', password: 'abc123123', age: 20, job: 'back-end engineer' },
+  { id: 3, username: 'wangwu', password: 'abc123123', age: 28, job: 'ios engineer' },
 ];
 
 function find({ username, password }) {

@@ -11,6 +11,7 @@ const { find, findById } = require('./db');
 app.use(
   cors({
     credentials: true, // 支持跨域接收cookie
+    // origin: '*', // 跨域接收cookie信息时，不能将`Access-Control-Allow-Origin`设置为`*`
   })
 );
 app.use(bodyParser());
