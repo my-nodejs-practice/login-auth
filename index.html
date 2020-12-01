@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>test</title>
+</head>
+
+<body>
+  <h2>hello</h2>
+  <script>
+
+    function cloneDeepForArray(arr) {
+      return arr.map(n => ({ ...n }));
+    }
+
+    const resData = [
+      {
+        resource: '/project',
+        ordering: 0.8999999999999998,
+        modifier: 'admin',
+        icon: null,
+        pid: 0,
+        updateTime: 1605234473000,
+        source: '1',
+        subResource: [
+          {
+            resource: '/project/list',
+            ordering: 0.8999999999999999,
+            modifier: 'admin',
+            icon: null,
+            pid: 6,
+            updateTime: 1605234473000,
+            source: '1',
+            subResource: [
+              {
+                resource: 'del_project',
+                ordering: 0.7625,
+                modifier: 'admin',
+                icon: null,
+                pid: 7,
+                updateTime: 1605234473000,
+                source: '1',
+                subResource: null,
+                type: 3,
+                oldId: 1,
+                isLeaf: true,
+                oldPid: null,
+                scopedSlots: { title: 'custom' },
+                createTime: 1605234473000,
+                proid: 1,
+                name: '删除项目按钮',
+                alias: null,
+                id: 53,
+                status: 1,
+              },
+            ],
+            type: 2,
+            oldId: 1,
+            isLeaf: false,
+            oldPid: null,
+            scopedSlots: { title: 'custom' },
+            createTime: 1605234473000,
+            proid: 1,
+            name: '项目列表',
+            alias: null,
+            id: 7,
+            status: 1,
+          },
+        ],
+        type: 2,
+        oldId: 1,
+        isLeaf: false,
+        oldPid: null,
+        scopedSlots: { title: 'custom' },
+        createTime: 1605234473000,
+        proid: 1,
+        name: '项目管理',
+        alias: null,
+        id: 6,
+        status: 1,
+      },
+    ];
+
+    // =>
+
+    const data = (() => {
+      function func(arr) {
+        return arr.map((node) => {
+          node._checked = 1;
+          if (node.subResource) {
+            func(node.subResource);
+          }
+          return node;
+        });
+      }
+      return func(resData.concat());
+    })();
+
+    // 展开节点获取子节点数据
+    const childData = [
+      {
+        resource: 'del_project',
+        ordering: 0.7625,
+        modifier: 'admin',
+        icon: null,
+        pid: 7,
+        updateTime: 1605234473000,
+        source: '1',
+        subResource: null,
+        type: 3,
+        oldId: 1,
+        isLeaf: true,
+        oldPid: null,
+        scopedSlots: { title: 'custom' },
+        createTime: 1605234473000,
+        proid: 1,
+        name: '删除项目按钮',
+        alias: null,
+        id: 53,
+        status: 1,
+      },
+      {
+        resource: 'add_project',
+        ordering: 0.7562499999999999,
+        modifier: 'admin',
+        icon: null,
+        pid: 7,
+        updateTime: 1605234473000,
+        source: '1',
+        subResource: null,
+        type: 3,
+        oldId: 1,
+        isLeaf: true,
+        oldPid: null,
+        scopedSlots: { title: 'custom' },
+        createTime: 1605234473000,
+        proid: 1,
+        name: '新增项目按钮',
+        alias: null,
+        id: 55,
+        status: 1,
+      },
+      {
+        resource: 'edit_project',
+        ordering: 0.7499999999999999,
+        modifier: 'admin',
+        icon: null,
+        pid: 7,
+        updateTime: 1605234473000,
+        source: '1',
+        subResource: null,
+        type: 3,
+        oldId: 1,
+        isLeaf: true,
+        oldPid: null,
+        scopedSlots: { title: 'custom' },
+        createTime: 1605234473000,
+        proid: 1,
+        name: '修改项目按钮',
+        alias: null,
+        id: 54,
+        status: 1,
+      },
+    ];
+
+    // childData 与 data合并
+
+    // console.log(data.concat());
+    function getNewData(d, cd) {
+      const pid = cd[0].pid;
+      const nd = findNodeById(d, pid);
+      nd.subResource.forEach((checkedNode) => {
+        cd.forEach((n) => {
+          if (n.id === checkedNode.id) {
+            n._checked = 1;
+          }
+        });
+      });
+      nd.subResource = cd;
+
+      function findNodeById(arr, pid) {
+        for (let i = 0; i < arr.length; i++) {
+          const node = arr[i];
+          if (node.id === pid) {
+            return node;
+          }
+          if (node.subResource) {
+            return findNodeById(node.subResource, pid);
+          }
+        }
+      }
+
+      return d;
+    }
+
+    const newData = getNewData(cloneDeepForArray(data), cloneDeepForArray(childData));
+
+    console.log('[newData]', newData);
+
+    // 更新treeKeys
+    function getTreeKeys(d) {
+      const checked = [];
+      const halfChecked = [];
+      function traverse(arr) {
+        // let newArr = arr.concat()
+        arr.forEach(n => {
+          if (n.subResource) {
+            traverse(n.subResource)
+          }
+          if (n._checked && !n.subResource) {
+            checked.push(n.id);
+          }
+          if (n.pid !== 0) {
+            if (!halfChecked.includes(n.pid) && halfChecked.includes(n.id)) {
+              // 节点处于半选状态，则父级也应该是半选状态。
+              halfChecked.push(n.pid)
+            } else if (!checked.includes(n.pid) && arr.every(n => n._checked)) {
+              // 节点不处于半选状态且子节点全部选中时，父节点也应选中。
+              checked.push(n.pid)
+            } else if (!halfChecked.includes(n.pid) && arr.some(n => n._checked)) {
+              // 否则子节点部分选中时，父节点半选
+              halfChecked.push(n.pid);
+            }
+          }
+        })
+      }
+      traverse(d);
+      return {
+        checked,
+        halfChecked
+      };
+    }
+    const treeKeys = getTreeKeys(cloneDeepForArray(newData));
+
+    console.log('[treeKeys]', treeKeys);  // { checked: [53], halfChecked: [6, 7] };
+  </script>
+</body>
+
+</html>

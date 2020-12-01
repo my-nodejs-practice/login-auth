@@ -1,0 +1,36 @@
+{
+  // 使用 IntelliSense 了解相关属性。
+  // 悬停以查看现有属性的描述。
+  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "koa-bodyparser",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/back-end/study/bodyparser.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "koa-middleware",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/back-end/study/middleware.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "koa-session",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/back-end/study/session.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "auth",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/back-end/src/index.js"
+    }
+  ]
+}

@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
     <Welcome :name="username"></Welcome>
   </div>
 </template>
@@ -8,16 +7,20 @@
 <script>
 // @ is an alias to /src
 import Welcome from '@/components/Welcome.vue';
-
+import { getUserInfo } from '@/api';
 export default {
   name: 'Home',
   components: {
-    Welcome,
+    Welcome
   },
   data() {
     return {
-      username: 'lizhigao',
+      username: ''
     };
   },
+  async created() {
+    const userInfo = await getUserInfo();
+    this.username = userInfo.data.username;
+  }
 };
 </script>

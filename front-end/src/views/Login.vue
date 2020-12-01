@@ -5,7 +5,12 @@
         <el-input placeholder="请输入用户名" v-model="form.username"></el-input>
       </el-form-item>
       <el-form-item label="密 码" prop="password">
-        <el-input placeholder="请输入密码" v-model="form.password" show-password></el-input>
+        <el-input
+          placeholder="请输入密码"
+          v-model="form.password"
+          show-password
+          @keypress.native.enter="submit"
+        ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submit">登录</el-button>
@@ -15,6 +20,7 @@
 </template>
 
 <script>
+import { login } from '@/api/index';
 export default {
   data() {
     return {
@@ -28,12 +34,17 @@ export default {
       },
     };
   },
+  // mounted () {
+  //   console.log(this.$router);;
+  // },
   methods: {
     submit() {
       this.$refs.loginForm.validate(valid => {
-        console.log(this.form);
         if (valid) {
-          console.log(this.form);
+          login(this.form).then(res => {
+            console.log('[res]', res.data);
+            this.$router.push('home');
+          });
         }
       });
     },

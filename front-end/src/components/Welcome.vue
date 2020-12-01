@@ -1,5 +1,5 @@
 <template>
-  <h1>Welcome，{{ name }}!</h1>
+  <h1>欢迎登录，{{ name }}!</h1>
 </template>
 
 <script>
@@ -7,9 +7,9 @@ export default {
   props: {
     name: {
       type: String,
-      default: 'lizhigao',
-    },
-  },
+      default: ''
+    }
+  }
 };
 </script>
 
