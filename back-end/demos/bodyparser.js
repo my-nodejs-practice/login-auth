@@ -1,11 +1,11 @@
 const Koa = require('koa');
-// const bodyParser = require('koa-bodyparser');
-const koaBody = require('koa-body');
+const bodyParser = require('koa-bodyparser');
+// const koaBody = require('koa-body');
 
 const app = new Koa();
 
-// app.use(bodyParser());
-app.use(koaBody({ multipart: true }));
+app.use(bodyParser());
+// app.use(koaBody({ multipart: true }));
 
 app.use(ctx => {
   // ctx.query 获取params参数

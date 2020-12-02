@@ -2,50 +2,70 @@ const Koa = require('koa');
 const Router = require('@koa/router'); // 路由支持
 const cors = require('@koa/cors'); // 跨域支持
 const bodyParser = require('koa-bodyparser'); // request参数解析
-const session = require('koa-session'); // session 操作
+
+const jwt = require('jsonwebtoken');
+const { find } = require('./db');
+
+const salt = '!@#$qwer_$#@!!@#$';
+
 const app = new Koa();
 const router = new Router();
 
-const { find, findById } = require('./db');
-
-app.use(
-  cors({
-    credentials: true, // 支持跨域接收cookie
-    // origin: '*', // 跨域接收cookie信息时，不能将`Access-Control-Allow-Origin`设置为`*`
-  })
-);
+app.use(cors());
 app.use(bodyParser());
 
-app.keys = ['ka!@#$']; // 签名
-app.use(
-  session(
+const generateToken = function (payload) {
+  // 生成token
+  const token = jwt.sign(
+    payload, // payload 存储信息
+    salt, // secretOrPrivateKey 签名秘钥
     {
-      key: '__SESSION_ID__', // 指定cookie key名称
-      maxAge: 60 * 60 * 1000, // cookie有效时间，单位ms
-    },
-    app
-  )
-);
+      expiresIn: '10000', // 支持写法 10000(10秒)、2d(2天)、10h(10小时)等
+    } // options
+  );
+  return token;
+};
 
-router.post('/login', async (ctx, next) => {
-  const { username, password } = ctx.request.body;
-  const u = find({ username, password });
-  if (u) {
-    ctx.session.uid = ctx.session.uid || null;
-    if (!ctx.session.isNew && ctx.session.uid) {
-      ctx.body = {
-        code: 0,
-        message: '已经登录过了',
-      };
-    } else {
-      ctx.body = {
-        code: 0,
-        data: {
-          username,
-        },
-      };
-      ctx.session.uid = u.id;
+const auth = async (ctx, next) => {
+  const auth = ctx.get('Authorization');
+  const token = auth ? auth.split(' ')[1] : null;
+  if (token) {
+    try {
+      const decoded = jwt.verify(
+        // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibHpnIiwiaWF0IjoxNjA2ODE5MDYzLCJleHAiOjE2MDY4MTkwNzN9.C4p3_T4Njefce2gmAkDGDeWVvhDkMXWaQI8veeg5uh0',
+        token,
+        salt
+      );
+      console.log(decoded);
+      ctx.auth = decoded;
+    } catch (error) {
+      ctx.auth = null;
     }
+  } else {
+    ctx.auth = null;
+  }
+  next();
+};
+
+router.post('/login', async ctx => {
+  const { username, password } = ctx.request.body;
+  const u = find({ username, password }); // 模拟查库
+  if (u) {
+    const token = generateToken({
+      user: {
+        id: u.id,
+        username: u.username,
+        age: u.age,
+        job: u.job,
+      },
+    });
+    ctx.body = {
+      code: 0,
+      token,
+      data: {
+        username,
+      },
+    };
   } else {
     ctx.body = {
       code: 4000,
@@ -54,28 +74,24 @@ router.post('/login', async (ctx, next) => {
   }
 });
 
-router.get('/user_info', async (ctx, next) => {
-  const uid = ctx.session.uid;
-  if (!uid) {
+router.get('/user_info', auth, async ctx => {
+  // 未正常解析到token信息
+  if (!ctx.auth) {
     ctx.body = {
       code: 5000,
       message: '登录失效，请重新登录',
     };
   } else {
-    const user = findById(uid);
     ctx.body = {
       code: 0,
-      data: {
-        username: user.username,
-        age: user.age,
-        job: user.job,
-      },
+      // 从token中获取用户信息
+      data: ctx.auth.user,
     };
   }
 });
 
 app.use(router.routes()).use(router.allowedMethods());
 
-app.listen(3000, function () {
-  console.log('Server is running on port 3000');
+app.listen(3001, function () {
+  console.log('Server is running on port 3001');
 });
