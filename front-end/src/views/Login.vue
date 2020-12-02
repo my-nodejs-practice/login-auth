@@ -14,6 +14,13 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submit">登录</el-button>
+        <!-- <el-button type="text"></el-button> -->
+        <el-link
+          type="primary"
+          href="https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoaclfbe25fhhtdsutf&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=http%3A%2F%2F127.0.0.1%3A3001%2Foauth%2Fredirect"
+        >
+          使用钉钉登录
+        </el-link>
       </el-form-item>
     </el-form>
   </div>
@@ -26,12 +33,12 @@ export default {
     return {
       form: {
         username: '',
-        password: '',
+        password: ''
       },
       rules: {
         username: [{ required: true, trigger: 'blur', message: '请输入用户名' }],
-        password: [{ required: true, trigger: 'blur', message: '请输入密码' }],
-      },
+        password: [{ required: true, trigger: 'blur', message: '请输入密码' }]
+      }
     };
   },
   // mounted () {
@@ -47,8 +54,8 @@ export default {
           });
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

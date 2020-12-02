@@ -9,7 +9,17 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
+  },
+  {
+    path: '/dingtalk',
+    name: 'dingtalk',
+    component: () => import(/* webpackChunkName: "login" */ '../views/DingTalk.vue')
+  },
+  {
+    path: '/401',
+    name: '401',
+    component: () => import(/* webpackChunkName: "login" */ '../views/401.vue')
   },
   {
     path: '/',
@@ -19,7 +29,7 @@ const routes = [
       {
         path: '/home',
         name: 'Home',
-        component: Home,
+        component: Home
       },
       {
         path: '/about',
@@ -27,14 +37,14 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-      },
-    ],
-  },
+        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+      }
+    ]
+  }
 ];
 
 const router = new VueRouter({
-  routes,
+  routes
 });
 
 export default router;
